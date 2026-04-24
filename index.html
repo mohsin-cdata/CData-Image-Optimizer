@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CData Image Tool</title>
-    
+
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -26,8 +26,7 @@
             20%, 40%, 60%, 80% { transform: translateX(4px); }
         }
         .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        
-        /* Custom Range Slider Styling */
+
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 20px;
@@ -35,7 +34,7 @@
             border-radius: 50%;
             background: #2563eb;
             cursor: pointer;
-            margin-top: -8px; 
+            margin-top: -8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         input[type=range]::-webkit-slider-runnable-track {
@@ -45,8 +44,7 @@
             background: #e2e8f0;
             border-radius: 2px;
         }
-        
-        /* Custom Checkbox */
+
         .checkbox-wrapper input:checked + div {
             background-color: #2563eb;
             border-color: #2563eb;
@@ -63,7 +61,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- STABLE INLINE ICONS ---
         const Icon = ({ name, size = 20, className = "" }) => {
             const icons = {
                 Image: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
@@ -73,7 +70,6 @@
                 ArrowUp: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>,
                 ArrowDown: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>,
                 GripVertical: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>,
-                Settings: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
                 Check: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
                 Copy: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>,
                 Alert: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -81,7 +77,6 @@
             return <span className={`inline-flex items-center ${className}`}>{icons[name] || null}</span>;
         };
 
-        // --- JSZIP LOADING HOOK ---
         const useJSZip = () => {
             const [isLoaded, setIsLoaded] = useState(false);
             useEffect(() => {
@@ -95,24 +90,26 @@
             return isLoaded;
         };
 
-        // --- MAIN APP COMPONENT ---
         const ImageConverterApp = () => {
             const isZipReady = useJSZip();
-            const [files, setFiles] = useState([]);
-            const [baseName, setBaseName] = useState("");
-            const [quality, setQuality] = useState(0.8); // Default 80%
-            const [usePadding, setUsePadding] = useState(true); // Default 01, 02...
-            const [showSnippets, setShowSnippets] = useState(false); // Toggle for HTML generation
-
-            const [isDragging, setIsDragging] = useState(false);
-            const [processing, setProcessing] = useState(false);
+            const [files, setFiles]             = useState([]);
+            const [baseName, setBaseName]       = useState("");
+            const [quality, setQuality]         = useState(0.8);
+            const [usePadding, setUsePadding]   = useState(true);
+            const [showSnippets, setShowSnippets] = useState(false);
+            const [autoRename, setAutoRename]   = useState(true);   // NEW: toggle sequential renaming
+            const [isDragging, setIsDragging]   = useState(false);
+            const [processing, setProcessing]   = useState(false);
+            const [downloadingId, setDownloadingId] = useState(null); // NEW: tracks per-row download
             const [draggedItemIndex, setDraggedItemIndex] = useState(null);
-            
-            // Validation State
-            const [showErrors, setShowErrors] = useState(false);
+            const [showErrors, setShowErrors]   = useState(false);
 
-            // Helpers
-            const getFormattedName = (index) => {
+            // Returns the output filename for a given file/index
+            const getFormattedName = (index, fileObj = null) => {
+                if (!autoRename) {
+                    const orig = (fileObj || files[index])?.originalName || 'image';
+                    return orig.replace(/\.[^.]+$/, '') + '.webp';
+                }
                 const num = index + 1;
                 const suffix = usePadding ? num.toString().padStart(2, '0') : num.toString();
                 return `${baseName || "filename"}-${suffix}.webp`;
@@ -123,21 +120,16 @@
                 return `<img src="../articles/${filename}" title="RELEVANT TITLE HERE"/>`;
             };
 
-            const copyToClipboard = (text) => {
-                navigator.clipboard.writeText(text);
-            };
+            const copyToClipboard = (text) => navigator.clipboard.writeText(text);
 
-            // Handlers
             const onFileDrop = (e) => {
                 e.preventDefault();
                 setIsDragging(false);
-                const droppedFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-                addFiles(droppedFiles);
+                addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
             };
 
             const onFileInput = (e) => {
-                const selectedFiles = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
-                addFiles(selectedFiles);
+                addFiles(Array.from(e.target.files).filter(f => f.type.startsWith('image/')));
             };
 
             const addFiles = (newFiles) => {
@@ -162,13 +154,10 @@
             const moveFile = (index, direction) => {
                 if ((direction === -1 && index === 0) || (direction === 1 && index === files.length - 1)) return;
                 const newFiles = [...files];
-                const temp = newFiles[index];
-                newFiles[index] = newFiles[index + direction];
-                newFiles[index + direction] = temp;
+                [newFiles[index], newFiles[index + direction]] = [newFiles[index + direction], newFiles[index]];
                 setFiles(newFiles);
             };
 
-            // Drag Sorting
             const handleDragStart = (e, index) => {
                 setDraggedItemIndex(index);
                 e.dataTransfer.effectAllowed = "move";
@@ -186,20 +175,45 @@
                 setFiles(newFiles);
             };
 
-            // Conversion Logic
+            // Convert a single image to WebP blob
+            const toWebpBlob = async (fileObj) => {
+                const img = new Image();
+                img.src = fileObj.preview;
+                await new Promise(resolve => img.onload = resolve);
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                return new Promise(resolve => canvas.toBlob(resolve, 'image/webp', quality));
+            };
+
+            const triggerDownload = (blob, filename) => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(link.href); }, 100);
+            };
+
+            // NEW: Download a single converted image
+            const downloadSingle = async (fileObj, index) => {
+                setDownloadingId(fileObj.id);
+                try {
+                    const blob = await toWebpBlob(fileObj);
+                    triggerDownload(blob, getFormattedName(index, fileObj));
+                } catch (e) {
+                    alert("Error converting image.");
+                } finally {
+                    setDownloadingId(null);
+                }
+            };
+
+            // Download all as zip
             const processAndDownload = async () => {
-                if (!isZipReady) { alert("ZIP library loading..."); return; }
-                
-                // VALIDATION CHECK
-                if (!baseName.trim()) {
-                    setShowErrors(true);
-                    return;
-                }
-                
-                if (files.length === 0) {
-                    alert("Please upload at least one image.");
-                    return;
-                }
+                if (!isZipReady) { alert("ZIP library loading, try again in a moment."); return; }
+                if (autoRename && !baseName.trim()) { setShowErrors(true); return; }
+                if (files.length === 0) { alert("Please upload at least one image."); return; }
 
                 setShowErrors(false);
                 setProcessing(true);
@@ -207,32 +221,11 @@
 
                 try {
                     for (let i = 0; i < files.length; i++) {
-                        const fileObj = files[i];
-                        const img = new Image();
-                        img.src = fileObj.preview;
-                        await new Promise(resolve => img.onload = resolve);
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', quality));
-                        zip.file(getFormattedName(i), blob);
+                        const blob = await toWebpBlob(files[i]);
+                        zip.file(getFormattedName(i, files[i]), blob);
                     }
-
                     const content = await zip.generateAsync({ type: "blob" });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(content);
-                    link.download = `${baseName}-images.zip`;
-                    document.body.appendChild(link);
-                    link.click();
-                    setTimeout(() => {
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(link.href);
-                    }, 100);
-
+                    triggerDownload(content, `${baseName || "images"}-export.zip`);
                 } catch (error) {
                     console.error(error);
                     alert("Error during conversion.");
@@ -252,44 +245,57 @@
                     </header>
 
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        
-                        {/* Settings Grid */}
                         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Template Name Input */}
+
+                            {/* Left: naming settings */}
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">KB Template Name (Base Filename) <span className="text-red-500">*</span></label>
-                                <div className="space-y-2">
-                                    <input 
-                                        type="text" 
-                                        placeholder="e.g. cloud-mistral" 
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-semibold text-slate-700">
+                                        KB Template Name (Base Filename) {autoRename && <span className="text-red-500">*</span>}
+                                    </label>
+                                    {/* AUTO-RENAME TOGGLE */}
+                                    <label className="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none">
+                                        <div className="relative">
+                                            <input type="checkbox" className="hidden" checked={autoRename} onChange={e => {
+                                                setAutoRename(e.target.checked);
+                                                if (!e.target.checked) setShowErrors(false);
+                                            }}/>
+                                            <div className="w-5 h-5 border-2 border-slate-300 rounded bg-white flex items-center justify-center transition-colors">
+                                                <Icon name="Check" size={14} className="text-white hidden"/>
+                                            </div>
+                                        </div>
+                                        <span className="text-sm text-slate-600">Auto-rename</span>
+                                    </label>
+                                </div>
+
+                                <div className={`space-y-2 transition-opacity ${!autoRename ? 'opacity-40 pointer-events-none' : ''}`}>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. cloud-mistral"
                                         className={`w-full p-2.5 border rounded-lg outline-none transition
                                             ${showErrors && !baseName ? 'border-red-400 focus:ring-2 focus:ring-red-200 bg-red-50 animate-shake' : 'border-slate-300 focus:ring-2 focus:ring-blue-500'}
                                         `}
                                         value={baseName}
-                                        onChange={(e) => {
-                                            setBaseName(e.target.value);
-                                            if (e.target.value) setShowErrors(false);
-                                        }}
+                                        onChange={e => { setBaseName(e.target.value); if (e.target.value) setShowErrors(false); }}
                                     />
                                     {showErrors && !baseName && (
                                         <p className="text-red-500 text-xs flex items-center gap-1 animate-fadeIn">
-                                            <Icon name="Alert" size={14} /> Template Name is required
+                                            <Icon name="Alert" size={14}/> Template Name is required when Auto-rename is on
                                         </p>
                                     )}
                                     <div className="flex flex-wrap gap-4 mt-2">
                                         <label className="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none">
                                             <div className="relative">
-                                                <input type="checkbox" className="hidden" checked={usePadding} onChange={(e) => setUsePadding(e.target.checked)} />
+                                                <input type="checkbox" className="hidden" checked={usePadding} onChange={e => setUsePadding(e.target.checked)}/>
                                                 <div className="w-5 h-5 border-2 border-slate-300 rounded bg-white flex items-center justify-center transition-colors">
                                                     <Icon name="Check" size={14} className="text-white hidden"/>
                                                 </div>
                                             </div>
                                             <span className="text-sm text-slate-600">Start with 01 (e.g. name-01.webp)</span>
                                         </label>
-
                                         <label className="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none">
                                             <div className="relative">
-                                                <input type="checkbox" className="hidden" checked={showSnippets} onChange={(e) => setShowSnippets(e.target.checked)} />
+                                                <input type="checkbox" className="hidden" checked={showSnippets} onChange={e => setShowSnippets(e.target.checked)}/>
                                                 <div className="w-5 h-5 border-2 border-slate-300 rounded bg-white flex items-center justify-center transition-colors">
                                                     <Icon name="Check" size={14} className="text-white hidden"/>
                                                 </div>
@@ -298,9 +304,15 @@
                                         </label>
                                     </div>
                                 </div>
+
+                                {!autoRename && (
+                                    <p className="mt-2 text-xs text-slate-400 italic">
+                                        Auto-rename off — output filenames match originals with .webp extension.
+                                    </p>
+                                )}
                             </div>
 
-                            {/* Quality Slider */}
+                            {/* Right: quality slider */}
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1 flex justify-between">
                                     <span>Image Quality</span>
@@ -309,37 +321,33 @@
                                     </span>
                                 </label>
                                 <div className="h-[42px] flex flex-col justify-center">
-                                    <input 
-                                        type="range" 
-                                        min="0.1" 
-                                        max="1.0" 
-                                        step="0.05" 
-                                        value={quality}
-                                        onChange={(e) => setQuality(parseFloat(e.target.value))}
+                                    <input
+                                        type="range" min="0.1" max="1.0" step="0.05" value={quality}
+                                        onChange={e => setQuality(parseFloat(e.target.value))}
                                         className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
                                     />
                                 </div>
-                                <div className="text-xs text-slate-400 mt-1 flex justify-between">
-                                    <span>Preview: <span className="font-mono text-slate-600 font-medium">{getFormattedName(0)}</span></span>
+                                <div className="text-xs text-slate-400 mt-1">
+                                    Preview: <span className="font-mono text-slate-600 font-medium">{getFormattedName(0)}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Drop Zone */}
-                        <div 
+                        <div
                             className={`border-2 border-dashed rounded-xl p-10 text-center transition-all duration-200 cursor-pointer
                                 ${isDragging ? 'border-blue-500 bg-blue-50 scale-[1.01]' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'}`}
-                            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                            onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={onFileDrop}
                             onClick={() => document.getElementById('fileInput').click()}
                         >
                             <div className="mx-auto w-16 h-16 mb-4 text-slate-400 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                <Icon name="UploadCloud" size={32} />
+                                <Icon name="UploadCloud" size={32}/>
                             </div>
                             <h3 className="text-lg font-medium text-slate-700">Click or Drag images here</h3>
                             <p className="text-slate-400 text-sm mt-1">Supports PNG, JPG, JPEG, BMP</p>
-                            <input id="fileInput" type="file" multiple accept="image/*" className="hidden" onChange={onFileInput} />
+                            <input id="fileInput" type="file" multiple accept="image/*" className="hidden" onChange={onFileInput}/>
                         </div>
                     </div>
 
@@ -349,22 +357,22 @@
                                 <h3 className="font-semibold text-slate-800 flex items-center gap-2">
                                     Files <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs">{files.length}</span>
                                 </h3>
-                                <button 
+                                <button
                                     onClick={processAndDownload}
                                     disabled={processing || !isZipReady}
                                     className={`flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium shadow-sm hover:shadow-md ${processing ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    {processing ? 'Processing...' : <><Icon name="Download" size={18}/> Convert & Download Zip</>}
+                                    {processing ? 'Processing…' : <><Icon name="Download" size={18}/> Convert &amp; Download Zip</>}
                                 </button>
                             </div>
-                            
+
                             <ul className="space-y-3">
                                 {files.map((file, index) => (
-                                    <li 
-                                        key={file.id} 
+                                    <li
+                                        key={file.id}
                                         draggable
-                                        onDragStart={(e) => handleDragStart(e, index)}
-                                        onDragOver={(e) => handleDragOver(e, index)}
+                                        onDragStart={e => handleDragStart(e, index)}
+                                        onDragOver={e => handleDragOver(e, index)}
                                         onDragEnd={() => setDraggedItemIndex(null)}
                                         className={`p-3 bg-white border border-slate-200 rounded-xl group transition-all duration-200 ${draggedItemIndex === index ? 'opacity-40 scale-95 bg-slate-50' : 'hover:border-blue-300 hover:shadow-sm'}`}
                                     >
@@ -373,34 +381,44 @@
                                                 <Icon name="GripVertical" size={20}/>
                                             </div>
                                             <div className="relative w-24 h-16 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 shrink-0 mt-1">
-                                                <img src={file.preview} alt="preview" className="w-full h-full object-contain" />
+                                                <img src={file.preview} alt="preview" className="w-full h-full object-contain"/>
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
                                                     <div>
                                                         <p className="text-sm text-slate-500 truncate mb-1">{file.originalName}</p>
                                                         <div className="flex items-center gap-2 mb-2">
-                                                            <span className="text-xs font-bold text-slate-400">➔</span>
-                                                            <span className="text-sm font-bold text-blue-600 font-mono">{getFormattedName(index)}</span>
+                                                            <span className="text-xs font-bold text-slate-400">&#x2192;</span>
+                                                            <span className="text-sm font-bold text-blue-600 font-mono">{getFormattedName(index, file)}</span>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <button onClick={() => moveFile(index, -1)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-blue-600 transition" disabled={index === 0}><Icon name="ArrowUp" size={18}/></button>
-                                                        <button onClick={() => moveFile(index, 1)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-blue-600 transition" disabled={index === files.length - 1}><Icon name="ArrowDown" size={18}/></button>
-                                                        <button onClick={() => removeFile(file.id)} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg ml-2 transition"><Icon name="Trash2" size={18}/></button>
+                                                        <button onClick={() => moveFile(index, -1)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-blue-600 transition" disabled={index === 0} title="Move up"><Icon name="ArrowUp" size={18}/></button>
+                                                        <button onClick={() => moveFile(index, 1)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-blue-600 transition" disabled={index === files.length - 1} title="Move down"><Icon name="ArrowDown" size={18}/></button>
+                                                        {/* NEW: individual download button */}
+                                                        <button
+                                                            onClick={() => downloadSingle(file, index)}
+                                                            disabled={downloadingId === file.id}
+                                                            className="p-2 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-lg transition disabled:opacity-40"
+                                                            title="Download this image as WebP"
+                                                        >
+                                                            {downloadingId === file.id
+                                                                ? <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                                                                : <Icon name="Download" size={18}/>
+                                                            }
+                                                        </button>
+                                                        <button onClick={() => removeFile(file.id)} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg ml-1 transition" title="Remove"><Icon name="Trash2" size={18}/></button>
                                                     </div>
                                                 </div>
 
-                                                {/* HTML Snippet Section */}
                                                 {showSnippets && (
                                                     <div className="mt-2 relative">
-                                                        <input 
-                                                            type="text" 
-                                                            readOnly 
-                                                            value={getHtmlSnippet(index)} 
+                                                        <input
+                                                            type="text" readOnly
+                                                            value={getHtmlSnippet(index)}
                                                             className="w-full bg-slate-50 border border-slate-200 text-xs font-mono text-slate-600 rounded p-2 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                                         />
-                                                        <button 
+                                                        <button
                                                             onClick={() => copyToClipboard(getHtmlSnippet(index))}
                                                             className="absolute right-1 top-1 p-1 hover:bg-slate-200 rounded text-slate-400 hover:text-slate-700 transition"
                                                             title="Copy HTML"
